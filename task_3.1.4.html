@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Задача 3.1.4</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); min-height: 100vh; color: #e0e0e0; display: flex; justify-content: center; padding: 20px; }
+.container { max-width: 800px; width: 100%; }
+.card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; margin-bottom: 20px; }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+.badge-topic { background: rgba(99,102,241,0.3); color: #a5b4fc; }
+.badge-diff { background: rgba(245,158,11,0.3); color: #fcd34d; }
+.task-text { font-size: 18px; line-height: 1.7; margin: 20px 0; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 12px; border-left: 3px solid #6366f1; }
+.btn-hint { display: block; width: 100%; padding: 16px; margin: 10px 0; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 14px; font-size: 18px; cursor: pointer; transition: all 0.3s; font-weight: 600; }
+.btn-hint:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.4); }
+.btn-hint:active { transform: scale(0.98); }
+.hint-box { display: none; margin-top: 15px; padding: 20px; background: rgba(99,102,241,0.1); border-radius: 14px; border: 1px solid rgba(99,102,241,0.3); animation: fadeSlide 0.4s ease; }
+.hint-box.visible { display: block; }
+.hint-label { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: #a5b4fc; margin-bottom: 8px; }
+.hint-content { font-size: 16px; line-height: 1.6; }
+.answer-box { display: none; margin-top: 15px; padding: 20px; background: rgba(34,197,94,0.1); border-radius: 14px; border: 1px solid rgba(34,197,94,0.3); animation: fadeSlide 0.4s ease; }
+.answer-box.visible { display: block; }
+.solution-box { display: none; margin-top: 15px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 14px; border: 1px solid rgba(255,255,255,0.15); animation: fadeSlide 0.4s ease; white-space: pre-wrap; line-height: 1.7; }
+.solution-box.visible { display: block; }
+@keyframes fadeSlide { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+.viz-title { font-size: 16px; color: #a5b4fc; margin-bottom: 20px; text-align: center; }
+.progress-bar { display: flex; gap: 6px; margin-bottom: 30px; }
+.progress-step { flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; transition: background 0.5s; }
+.progress-step.active { background: #6366f1; box-shadow: 0 0 10px rgba(99,102,241,0.5); }
+.progress-step.done { background: #22c55e; }
+.frame-display { position: relative; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+.frame-card { text-align: center; padding: 30px; animation: popIn 0.5s ease; }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 50% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+.frame-icon { font-size: 64px; margin-bottom: 16px; animation: bounce 1s infinite; }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.frame-step-num { font-size: 12px; color: #6366f1; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+.frame-title { font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+.frame-detail { font-size: 15px; color: #a0a0b8; line-height: 1.5; max-width: 500px; margin: 0 auto; }
+.nav-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+.nav-btn { padding: 10px 24px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #e0e0e0; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+.nav-btn:hover { background: rgba(255,255,255,0.1); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn.play { background: #22c55e; border-color: #22c55e; color: #000; font-weight: 600; }
+.plan-list { margin-top: 15px; padding: 0; list-style: none; }
+.plan-list li { padding: 10px 16px; margin: 6px 0; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 2px solid #6366f1; font-size: 15px; }
+.plan-list li::before { content: "▸ "; color: #6366f1; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <span class="badge badge-topic">Движение / </span>
+    <span class="badge badge-diff">5.5</span>
+    <div class="task-text">Папа, Маша и Яша идут в школу. Пока папа делает 3 шага, Маша делает 5 шагов. Пока Маша делает 3 шага, Яша делает 5 шагов. Маша и Яша посчитали, что вместе они сделали 400 шагов. Сколько шагов сделал папа? (Напишите решение задачи, а не только ответ).</div>
+  </div>
+
+  <button class="btn-hint" id="hintBtn" onclick="showNextHint()">💡 Подсказка</button>
+  
+  <div class="hint-box" id="hint1Box">
+    <div class="hint-label">Подсказка 1</div>
+    <div class="hint-content" id="hint1Content"></div>
+  </div>
+  <div class="hint-box" id="hint2Box">
+    <div class="hint-label">Подсказка 2</div>
+    <div class="hint-content" id="hint2Content"></div>
+  </div>
+  <div class="hint-box" id="hint3Box">
+    <div class="hint-label">Подсказка 3</div>
+    <div class="hint-content" id="hint3Content"></div>
+  </div>
+  <div class="answer-box" id="answerBox">
+    <div class="hint-label">✅ Ответ</div>
+    <div class="hint-content" id="answerContent"></div>
+  </div>
+  <div class="solution-box" id="solutionBox">
+    <div class="hint-label">📝 Полное решение</div>
+    <div id="solutionContent"></div>
+  </div>
+
+  <div class="card" id="vizCard" style="display:none;">
+    <div class="viz-title">🎬 Визуализация хода решения</div>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="frame-display" id="frameDisplay"></div>
+    <div class="nav-buttons">
+      <button class="nav-btn" id="prevBtn" onclick="prevFrame()">◀ Назад</button>
+      <button class="nav-btn play" id="playBtn" onclick="toggleAutoPlay()">▶ Авто</button>
+      <button class="nav-btn" id="nextBtn" onclick="nextFrame()">Вперёд ▶</button>
+    </div>
+  </div>
+
+  <div class="card" id="planCard" style="display:none;">
+    <div class="hint-label">📋 План решения</div>
+    <ul class="plan-list" id="planList"></ul>
+  </div>
+</div>
+
+<script>
+const hints = ["Обратите внимание на соотношения между шагами папы, Маши и Яши.","Попробуйте выразить шаги Маши и Яши через шаги папы, используя данные соотношения.","Составьте уравнение, используя общее количество шагов Маши и Яши, и решите его для нахождения шагов папы."];
+const answerText = "Папа сделал 240 шагов.";
+const solutionText = "Обозначим количество шагов, сделанных папой, Машей и Яшей соответственно как P, M и Y.\\n\\n1. Из условия задачи знаем, что пока папа делает 3 шага, Маша делает 5 шагов. Это можно записать в виде соотношения: \\n   \\( \\frac{M}{P} = \\frac{5}{3} \\) \\n   Следовательно, \\( M = \\frac{5}{3} P \\).\\n\\n2. Также известно, что пока Маша делает 3 шага, Яша делает 5 шагов: \\n   \\( \\frac{Y}{M} = \\frac{5}{3} \\) \\n   Отсюда \\( Y = \\frac{5}{3} M \\).\\n\\n3. Подставим выражение для M из первого уравнения во второе: \\n   \\( Y = \\frac{5}{3} \\cdot \\frac{5}{3} P = \\frac{25}{9} P \\).\\n\\n4. Теперь найдем общее количество шагов, сделанных Машей и Яшей: \\n   \\( M + Y = \\frac{5}{3} P + \\frac{25}{9} P = \\frac{15}{9} P + \\frac{25}{9} P = \\frac{40}{9} P \\).\\n\\n5. По условию задачи, Маша и Яша вместе сделали 400 шагов: \\n   \\( \\frac{40}{9} P = 400 \\).\\n\\n6. Умножим обе стороны уравнения на 9: \\n   \\( 40P = 3600 \\).\\n\\n7. Разделим обе стороны на 40: \\n   \\( P = 90 \\).\\n\\n8. Теперь подставим значение P в выражение для M: \\n   \\( M = \\frac{5}{3} \\cdot 90 = 150 \\).\\n\\n9. Подставим значение M в выражение для Y: \\n   \\( Y = \\frac{5}{3} \\cdot 150 = 250 \\).\\n\\n10. Таким образом, папа сделал 240 шагов.";
+const planSteps = ["Обозначить количество шагов папы, Маши и Яши как P, M и Y соответственно.","Записать соотношения между шагами: M = (5/3)P и Y = (5/3)M.","Подставить выражение для M в уравнение для Y.","Найти общее количество шагов, сделанных Машей и Яшей: M + Y.","Составить уравнение, используя общее количество шагов (400) и решить его для P.","Подставить найденное значение P в уравнения для M и Y, если это необходимо."];
+const vizFrames = [{"detail":"Обозначим количество шагов папы как P, Маши как M и Яши как Y.","icon":"✏️","step":1,"title":"Обозначение шагов"},{"detail":"Записываем соотношения: M = (5/3)P и Y = (5/3)M.","icon":"📊","step":2,"title":"Соотношения шагов"},{"detail":"Подставляем M в уравнение для Y: Y = (5/3)(5/3)P = (25/9)P.","icon":"🔄","step":3,"title":"Подстановка"},{"step":4,"title":"Общее количество шагов","detail":"Находим общее количество шагов: M + Y = (40/9)P.","icon":"➕"},{"detail":"Составляем уравнение: (40/9)P = 400.","icon":"📝","step":5,"title":"Составление уравнения"},{"detail":"Умножаем обе стороны на 9 и делим на 40, чтобы найти P.","icon":"🔍","step":6,"title":"Решение уравнения"},{"detail":"Находим, что папа сделал 240 шагов.","icon":"🏃‍♂️","step":7,"title":"Нахождение шагов папы"}];
+
+let hintLevel = 0;
+let currentFrame = 0;
+let autoPlayInterval = null;
+
+function showNextHint() {
+  hintLevel++;
+  const btn = document.getElementById('hintBtn');
+  
+  if (hintLevel === 1) {
+    document.getElementById('hint1Content').textContent = hints[0];
+    document.getElementById('hint1Box').classList.add('visible');
+    btn.textContent = '💡 Подсказка (2/3)';
+  } else if (hintLevel === 2) {
+    document.getElementById('hint2Content').textContent = hints[1];
+    document.getElementById('hint2Box').classList.add('visible');
+    btn.textContent = '💡 Подсказка (3/3)';
+  } else if (hintLevel === 3) {
+    document.getElementById('hint3Content').textContent = hints[2];
+    document.getElementById('hint3Box').classList.add('visible');
+    btn.textContent = '✅ Показать ответ и решение';
+  } else if (hintLevel === 4) {
+    document.getElementById('answerContent').textContent = answerText;
+    document.getElementById('answerBox').classList.add('visible');
+    document.getElementById('solutionContent').textContent = solutionText;
+    document.getElementById('solutionBox').classList.add('visible');
+    btn.textContent = '🎬 Смотреть визуализацию';
+    
+    if (vizFrames.length > 0) {
+      document.getElementById('vizCard').style.display = 'block';
+      document.getElementById('planCard').style.display = 'block';
+      buildProgressBar();
+      showFrame(0);
+      buildPlanList();
+    }
+  } else if (hintLevel === 5) {
+    document.getElementById('vizCard').scrollIntoView({ behavior: 'smooth' });
+    btn.textContent = '🔄 Начать заново';
+    hintLevel = 0;
+  }
+}
+
+function buildProgressBar() {
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = vizFrames.map(function(_, i) { return '<div class="progress-step" id="step' + i + '"></div>'; }).join('');
+}
+
+function buildPlanList() {
+  const list = document.getElementById('planList');
+  list.innerHTML = planSteps.map(function(s) { return '<li>' + s + '</li>'; }).join('');
+}
+
+function showFrame(idx) {
+  if (idx < 0 || idx >= vizFrames.length) return;
+  currentFrame = idx;
+  const f = vizFrames[idx];
+  
+  document.getElementById('frameDisplay').innerHTML =
+    '<div class="frame-card">' +
+      '<div class="frame-icon">' + (f.icon || '📐') + '</div>' +
+      '<div class="frame-step-num">Шаг ' + (f.step || (idx + 1)) + ' из ' + vizFrames.length + '</div>' +
+      '<div class="frame-title">' + (f.title || '') + '</div>' +
+      '<div class="frame-detail">' + (f.detail || '') + '</div>' +
+    '</div>';
+  
+  document.querySelectorAll('.progress-step').forEach(function(el, i) {
+    el.classList.remove('active', 'done');
+    if (i < idx) el.classList.add('done');
+    if (i === idx) el.classList.add('active');
+  });
+  
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === vizFrames.length - 1;
+}
+
+function nextFrame() { showFrame(currentFrame + 1); }
+function prevFrame() { showFrame(currentFrame - 1); }
+
+function toggleAutoPlay() {
+  if (autoPlayInterval) {
+    clearInterval(autoPlayInterval);
+    autoPlayInterval = null;
+    document.getElementById('playBtn').textContent = '▶ Авто';
+  } else {
+    document.getElementById('playBtn').textContent = '⏸ Стоп';
+    autoPlayInterval = setInterval(function() {
+      if (currentFrame < vizFrames.length - 1) {
+        nextFrame();
+      } else {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+        document.getElementById('playBtn').textContent = '▶ Авто';
+      }
+    }, 2500);
+  }
+}
+</script>
+</body>
+</html>
